@@ -96,7 +96,7 @@ proxy-groups:
     interval: 300
     proxies:
       - 2️⃣ JMS洛杉矶(CN2 GT,s2)
-      - ⚡ JMS全球最快
+      - ⚡ JMS美国最快
       - ⚡ JMS全球最快
 
   # ===== 规则分流组 =====
