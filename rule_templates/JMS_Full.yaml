@@ -1,196 +1,208 @@
-# JustMySocks (JMS) 专用全分组规则 - ShellCrash YAML 模板
-# 基于 DustinWin 规则集，针对 JMS 节点优化
-#
-# 适用套餐：Los Angeles / Hong Kong / Tokyo / London
-#
-# JMS 节点线路说明（以 Los Angeles 为例）：
-#   s1, s2  - CN2 GT（电信联通移动直连，常规线路）
-#   s3      - CN2 GIA（电信最优质线路，推荐）
-#   s4      - 日本大阪 Softbank（联通友好）
-#   s5      - 荷兰 CN2 GIA（三网回程 GIA）
-#   s801    - Freedom（流量倍率优惠，无质量保证）
+# JustMySocks (JMS) 精简规则 - ShellCrash YAML 模板
+# 
+# 节点说明（Los Angeles 套餐）：
+#   s1, s2 - CN2 GT（日常线路）
+#   s3     - CN2 GIA（电信优质线路）
+#   s4     - 日本大阪 Softbank
+#   s5     - 荷兰 CN2 GIA
+#   s801   - Freedom（省流量）
 
-# 代理组定义
 proxy-groups:
-  # 主选择器
+  # ===== 主选择器 =====
   - name: 🚀 节点选择
     type: select
     proxies:
-      - ⚡ US美国洛杉矶(高速优质,CN2 GIA,s3)
-      - 🚗 US美国洛杉矶(日常稳定,CN2 GT,s1-2)
-      - 🇯🇵 JP日本大阪(联通友好,Softbank,s4)
-      - 🇳🇱 NL荷兰(高速优质,CN2 GIA,s5)
-      - 💰 Freedom省流量(s801)
-      - ♻️ 自动选择
-      - 👆 手动选择
+      - ⚡ JMS美国最快
+      - 🔄 JMS美国稳定IP
+      - 🇯🇵 日本节点
+      - 🇳🇱 荷兰节点
+      - 💰 省流量节点
+      - 🎯 直连
 
-  # JMS 线路分组
-  - name: ⚡ US美国洛杉矶(高速优质,CN2 GIA,s3)
+  # ===== JMS 节点组 =====
+  # 最快节点：s1-s3 自动测速选最快
+  - name: ⚡ JMS美国最快
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    filter: "s3\\."
+    filter: "c78s[123]\\."
     use:
       - jmssub
 
-  - name: 🚗 US美国洛杉矶(日常稳定,CN2 GT,s1-2)
+  # 最快节点：JMS 自动测速选最快（含省流量节点）
+  - name: ⚡ JMS全球最快
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    filter: "s[12]\\."
+    filter: "c78s([12345]|801)\\."
     use:
       - jmssub
 
-  - name: 🇯🇵 JP日本大阪(联通友好,Softbank,s4)
+
+  # 稳定IP：s3优先，挂了用s1，再挂用s2（fallback模式）
+  - name: 🔄 JMS美国稳定IP
+    type: fallback
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - 📍 s3-CN2GIA
+      - 📍 s1-CN2GT
+      - 📍 s2-CN2GT
+
+  # 单节点（供稳定IP组引用）
+  - name: 📍 s3-CN2GIA
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    filter: "s4\\."
+    filter: "c78s3\\."
     use:
       - jmssub
 
-  - name: 🇳🇱 NL荷兰(高速优质,CN2 GIA,s5)
+  - name: 📍 s1-CN2GT
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    filter: "s5\\."
+    filter: "c78s1\\."
     use:
       - jmssub
 
-  - name: 💰 Freedom省流量(s801)
+  - name: 📍 s2-CN2GT
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    filter: "c78s2\\."
+    use:
+      - jmssub
+
+  # 其他地区节点
+  - name: 🇯🇵 日本节点
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    filter: "c78s4\\."
+    use:
+      - jmssub
+
+  - name: 🇳🇱 荷兰节点
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    filter: "c78s5\\."
+    use:
+      - jmssub
+
+  - name: 💰 省流量节点
     type: select
-    filter: "s801\\."
+    filter: "c78s801\\."
     use:
       - jmssub
 
-  # 功能分组
-  - name: 🤖 AI 平台
+  # ===== 规则分流组 =====
+  - name: 🏠 内网地址
     type: select
     proxies:
-      - ⚡ US美国洛杉矶(高速优质,CN2 GIA,s3)
-      - 🇯🇵 JP日本大阪(联通友好,Softbank,s4)
-      - 🚀 节点选择
-      - 👆 手动选择
+      - 🎯 直连
+
+  - name: 🇨🇳 国内流量
+    type: select
+    proxies:
+      - 🎯 直连
+      - ⚡ JMS美国最快
+      - ⚡ JMS全球最快
+      - 🔄 JMS美国稳定IP
+      - 📍 s3-CN2GIA
+      - 📍 s1-CN2GT
+      - 📍 s2-CN2GT
+      - 🇯🇵 日本节点
+      - 🇳🇱 荷兰节点
+      - 💰 省流量节点
+
+  - name: 🤖 AI平台
+    type: select
+    proxies:
+      - 🔄 JMS美国稳定IP
+      - ⚡ JMS美国最快
+      - ⚡ JMS全球最快
+      - 📍 s3-CN2GIA
+      - 📍 s1-CN2GT
+      - 📍 s2-CN2GT
+      - 🇯🇵 日本节点
+      - 🇳🇱 荷兰节点
+      - 💰 省流量节点
+      - 🎯 直连
+
+  - name: ⛔ 广告拦截
+    type: select
+    proxies:
+      - REJECT
+      - ⚡ JMS美国最快
+      - ⚡ JMS全球最快
+      - 🔄 JMS美国稳定IP
+      - 📍 s3-CN2GIA
+      - 📍 s1-CN2GT
+      - 📍 s2-CN2GT
+      - 🇯🇵 日本节点
+      - 🇳🇱 荷兰节点
+      - 💰 省流量节点
+      - 🎯 直连
 
   - name: 📥 BT Tracker
     type: select
     proxies:
-      - 🎯 全球直连
-      - 🚀 节点选择
+      - 🎯 直连
+      - ⚡ JMS美国最快
+      - ⚡ JMS全球最快
+      - 🔄 JMS美国稳定IP
+      - 📍 s3-CN2GIA
+      - 📍 s1-CN2GT
+      - 📍 s2-CN2GT
+      - 🇯🇵 日本节点
+      - 🇳🇱 荷兰节点
+      - 💰 省流量节点
 
-  - name: 🌐 境外顶级域
+  - name: 🌐 国外流量
     type: select
     proxies:
-      - 🚀 节点选择
-      - 🎯 全球直连
-
-  - name: 📶 网络测试
-    type: select
-    proxies:
-      - 🎯 全球直连
-      - 🚀 节点选择
-      - ⚡ US美国洛杉矶(高速优质,CN2 GIA,s3)
-
-  - name: Ⓜ️ 微软服务
-    type: select
-    proxies:
-      - 🎯 全球直连
-      - 🚀 节点选择
-
-  - name: 🔍 谷歌服务
-    type: select
-    proxies:
-      - 🎯 全球直连
-      - 🚀 节点选择
-
-  - name: 🍎 苹果服务
-    type: select
-    proxies:
-      - 🎯 全球直连
-      - 🚀 节点选择
-
-  - name: 🎮 游戏服务
-    type: select
-    proxies:
-      - 🎯 全球直连
-      - 🚀 节点选择
-
-  - name: 🎬 国外媒体
-    type: select
-    proxies:
-      - 🚀 节点选择
-      - ⚡ US美国洛杉矶(高速优质,CN2 GIA,s3)
-      - 🇯🇵 JP日本大阪(联通友好,Softbank,s4)
-
-  - name: 🎮 游戏平台
-    type: select
-    proxies:
-      - 🚀 节点选择
-      - ⚡ US美国洛杉矶(高速优质,CN2 GIA,s3)
-      - 🇯🇵 JP日本大阪(联通友好,Softbank,s4)
-
-  - name: 📲 电报消息
-    type: select
-    proxies:
-      - 🚀 节点选择
-      - ⚡ US美国洛杉矶(高速优质,CN2 GIA,s3)
-
-  - name: 🏠 直连域名
-    type: select
-    proxies:
-      - 🎯 全球直连
-      - 🚀 节点选择
-
-  - name: 🇨🇳 直连 IP
-    type: select
-    proxies:
-      - 🎯 全球直连
-      - 🚀 节点选择
-
-  - name: 🔗 代理域名
-    type: select
-    proxies:
-      - 🚀 节点选择
-      - 🎯 全球直连
+      - ⚡ JMS美国最快
+      - ⚡ JMS全球最快
+      - 🔄 JMS美国稳定IP
+      - 📍 s3-CN2GIA
+      - 📍 s1-CN2GT
+      - 📍 s2-CN2GT
+      - 🇯🇵 日本节点
+      - 🇳🇱 荷兰节点
+      - 💰 省流量节点
+      - 🎯 直连
 
   - name: 🐟 漏网之鱼
     type: select
     proxies:
-      - 🚀 节点选择
-      - ⚡ US美国洛杉矶(高速优质,CN2 GIA,s3)
-      - 🎯 全球直连
+      - ⚡ JMS美国最快
+      - ⚡ JMS全球最快
+      - 🔄 JMS美国稳定IP
+      - 📍 s3-CN2GIA
+      - 📍 s1-CN2GT
+      - 📍 s2-CN2GT
+      - 🇯🇵 日本节点
+      - 🇳🇱 荷兰节点
+      - 💰 省流量节点
+      - 🎯 直连
 
-  - name: ⛔ 广告域名
+  - name: 🎯 直连
     type: select
     proxies:
-      - REJECT
       - DIRECT
-
-  - name: 🎯 全球直连
-    type: select
-    proxies:
-      - DIRECT
-
-  # 通用分组（兜底）
-  - name: ♻️ 自动选择
-    type: url-test
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-    tolerance: 100
-    use:
-      - jmssub
-
-  - name: 👆 手动选择
-    type: select
-    use:
-      - jmssub
 
 # 规则提供者
 rule-providers:
+  # 内网地址
   private:
     type: http
     behavior: domain
@@ -198,6 +210,14 @@ rule-providers:
     path: ./ruleset/private.list
     interval: 86400
 
+  privateip:
+    type: http
+    behavior: ipcidr
+    url: https://github.com/DustinWin/geoip/releases/download/ips/privateip.list
+    path: ./ruleset/privateip.list
+    interval: 86400
+
+  # 广告
   ads:
     type: http
     behavior: domain
@@ -205,11 +225,28 @@ rule-providers:
     path: ./ruleset/ads.list
     interval: 86400
 
+  # BT Tracker
   trackerslist:
     type: http
     behavior: domain
     url: https://github.com/DustinWin/domain-list-custom/releases/download/domains/trackerslist.list
     path: ./ruleset/trackerslist.list
+    interval: 86400
+
+  # AI 平台
+  ai:
+    type: http
+    behavior: domain
+    url: https://github.com/DustinWin/domain-list-custom/releases/download/domains/ai.list
+    path: ./ruleset/ai.list
+    interval: 86400
+
+  # 国内域名（合并了 cn + microsoft-cn + apple-cn + google-cn + games-cn）
+  cn:
+    type: http
+    behavior: domain
+    url: https://github.com/DustinWin/domain-list-custom/releases/download/domains/cn.list
+    path: ./ruleset/cn.list
     interval: 86400
 
   microsoft-cn:
@@ -233,69 +270,7 @@ rule-providers:
     path: ./ruleset/google-cn.list
     interval: 86400
 
-  games-cn:
-    type: http
-    behavior: domain
-    url: https://github.com/DustinWin/domain-list-custom/releases/download/domains/games-cn.list
-    path: ./ruleset/games-cn.list
-    interval: 86400
-
-  media:
-    type: http
-    behavior: domain
-    url: https://github.com/DustinWin/domain-list-custom/releases/download/domains/media.list
-    path: ./ruleset/media.list
-    interval: 86400
-
-  games:
-    type: http
-    behavior: domain
-    url: https://github.com/DustinWin/domain-list-custom/releases/download/domains/games.list
-    path: ./ruleset/games.list
-    interval: 86400
-
-  ai:
-    type: http
-    behavior: domain
-    url: https://github.com/DustinWin/domain-list-custom/releases/download/domains/ai.list
-    path: ./ruleset/ai.list
-    interval: 86400
-
-  networktest:
-    type: http
-    behavior: domain
-    url: https://github.com/DustinWin/domain-list-custom/releases/download/domains/networktest.list
-    path: ./ruleset/networktest.list
-    interval: 86400
-
-  tld-proxy:
-    type: http
-    behavior: domain
-    url: https://github.com/DustinWin/domain-list-custom/releases/download/domains/tld-proxy.list
-    path: ./ruleset/tld-proxy.list
-    interval: 86400
-
-  proxy:
-    type: http
-    behavior: domain
-    url: https://github.com/DustinWin/domain-list-custom/releases/download/domains/proxy.list
-    path: ./ruleset/proxy.list
-    interval: 86400
-
-  cn:
-    type: http
-    behavior: domain
-    url: https://github.com/DustinWin/domain-list-custom/releases/download/domains/cn.list
-    path: ./ruleset/cn.list
-    interval: 86400
-
-  privateip:
-    type: http
-    behavior: ipcidr
-    url: https://github.com/DustinWin/geoip/releases/download/ips/privateip.list
-    path: ./ruleset/privateip.list
-    interval: 86400
-
+  # 国内IP
   cnip:
     type: http
     behavior: ipcidr
@@ -303,46 +278,38 @@ rule-providers:
     path: ./ruleset/cnip.list
     interval: 86400
 
-  mediaip:
+  # 国外代理域名
+  proxy:
     type: http
-    behavior: ipcidr
-    url: https://github.com/DustinWin/geoip/releases/download/ips/mediaip.list
-    path: ./ruleset/mediaip.list
+    behavior: domain
+    url: https://github.com/DustinWin/domain-list-custom/releases/download/domains/proxy.list
+    path: ./ruleset/proxy.list
     interval: 86400
 
-  gamesip:
-    type: http
-    behavior: ipcidr
-    url: https://github.com/DustinWin/geoip/releases/download/ips/gamesip.list
-    path: ./ruleset/gamesip.list
-    interval: 86400
-
-  telegramip:
-    type: http
-    behavior: ipcidr
-    url: https://github.com/DustinWin/geoip/releases/download/ips/telegramip.list
-    path: ./ruleset/telegramip.list
-    interval: 86400
-
-# 规则
+# 规则（顺序很重要，先匹配先生效）
 rules:
-  - RULE-SET,private,🎯 全球直连
-  - RULE-SET,ads,⛔ 广告域名
+  # 1. 内网地址 → 直连
+  - RULE-SET,private,🏠 内网地址
+  - RULE-SET,privateip,🏠 内网地址
+
+  # 2. 广告 → 可选拦截
+  - RULE-SET,ads,⛔ 广告拦截
+
+  # 3. BT Tracker → 直连优先
   - RULE-SET,trackerslist,📥 BT Tracker
-  - RULE-SET,microsoft-cn,Ⓜ️ 微软服务
-  - RULE-SET,apple-cn,🍎 苹果服务
-  - RULE-SET,google-cn,🔍 谷歌服务
-  - RULE-SET,games-cn,🎮 游戏服务
-  - RULE-SET,media,🎬 国外媒体
-  - RULE-SET,games,🎮 游戏平台
-  - RULE-SET,ai,🤖 AI 平台
-  - RULE-SET,networktest,📶 网络测试
-  - RULE-SET,tld-proxy,🌐 境外顶级域
-  - RULE-SET,proxy,🔗 代理域名
-  - RULE-SET,cn,🏠 直连域名
-  - RULE-SET,privateip,🎯 全球直连
-  - RULE-SET,cnip,🇨🇳 直连 IP
-  - RULE-SET,mediaip,🎬 国外媒体
-  - RULE-SET,gamesip,🎮 游戏平台
-  - RULE-SET,telegramip,📲 电报消息
+
+  # 4. AI 平台 → 代理优先
+  - RULE-SET,ai,🤖 AI平台
+
+  # 5. 国内流量 → 直连
+  - RULE-SET,cn,🇨🇳 国内流量
+  - RULE-SET,microsoft-cn,🇨🇳 国内流量
+  - RULE-SET,apple-cn,🇨🇳 国内流量
+  - RULE-SET,google-cn,🇨🇳 国内流量
+  - RULE-SET,cnip,🇨🇳 国内流量
+
+  # 6. 国外流量 → 代理
+  - RULE-SET,proxy,🌐 国外流量
+
+  # 7. 兜底
   - MATCH,🐟 漏网之鱼
