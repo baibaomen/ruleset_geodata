@@ -9,7 +9,7 @@
 
 proxy-groups:
   # ===== JMS 原始节点组（按服务器分组）=====
-  - name: JMS洛杉矶(日常稳定,CN2 GT,s1)
+  - name: 1️⃣ JMS洛杉矶(CN2 GT,s1)
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
@@ -18,7 +18,7 @@ proxy-groups:
     use:
       - jmssub
 
-  - name: JMS洛杉矶(日常稳定,CN2 GT,s2)
+  - name: 2️⃣ JMS洛杉矶(CN2 GT,s2)
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
@@ -27,7 +27,7 @@ proxy-groups:
     use:
       - jmssub
 
-  - name: JMS洛杉矶(高速优质,CN2 GIA,s3)
+  - name: 3️⃣ JMS洛杉矶(CN2 GIA,s3)
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
@@ -36,7 +36,7 @@ proxy-groups:
     use:
       - jmssub
 
-  - name: JMS日本大阪(联通友好,Softbank,s4)
+  - name: 4️⃣ JMS日本大阪(Softbank,s4)
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
@@ -45,7 +45,7 @@ proxy-groups:
     use:
       - jmssub
 
-  - name: JMS荷兰(高速优质,CN2 GIA,s5)
+  - name: 5️⃣ JMS荷兰(CN2 GIA,s5)
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
@@ -54,7 +54,7 @@ proxy-groups:
     use:
       - jmssub
 
-  - name: JMS Freedom省流量(0.1倍率,s801)
+  - name: 6️⃣ JMS Freedom(0.1倍率,s801)
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
@@ -71,9 +71,9 @@ proxy-groups:
     interval: 300
     tolerance: 50
     proxies:
-      - JMS洛杉矶(日常稳定,CN2 GT,s1)
-      - JMS洛杉矶(日常稳定,CN2 GT,s2)
-      - JMS洛杉矶(高速优质,CN2 GIA,s3)
+      - 1️⃣ JMS洛杉矶(CN2 GT,s1)
+      - 2️⃣ JMS洛杉矶(CN2 GT,s2)
+      - 3️⃣ JMS洛杉矶(CN2 GIA,s3)
 
   # 全球最快：所有节点自动测速
   - name: ⚡ JMS全球最快
@@ -82,22 +82,22 @@ proxy-groups:
     interval: 300
     tolerance: 50
     proxies:
-      - JMS洛杉矶(日常稳定,CN2 GT,s1)
-      - JMS洛杉矶(日常稳定,CN2 GT,s2)
-      - JMS洛杉矶(高速优质,CN2 GIA,s3)
-      - JMS日本大阪(联通友好,Softbank,s4)
-      - JMS荷兰(高速优质,CN2 GIA,s5)
-      - JMS Freedom省流量(0.1倍率,s801)
+      - 1️⃣ JMS洛杉矶(CN2 GT,s1)
+      - 2️⃣ JMS洛杉矶(CN2 GT,s2)
+      - 3️⃣ JMS洛杉矶(CN2 GIA,s3)
+      - 4️⃣ JMS日本大阪(Softbank,s4)
+      - 5️⃣ JMS荷兰(CN2 GIA,s5)
+      - 6️⃣ JMS Freedom(0.1倍率,s801)
 
-  # 稳定IP：s3优先→s1→s2（fallback故障转移）
+  # 稳定IP：s2优先→s1→s3（fallback故障转移）
   - name: 🔄 JMS美国稳定IP
     type: fallback
     url: https://www.gstatic.com/generate_204
     interval: 300
     proxies:
-      - JMS洛杉矶(高速优质,CN2 GIA,s3)
-      - JMS洛杉矶(日常稳定,CN2 GT,s1)
-      - JMS洛杉矶(日常稳定,CN2 GT,s2)
+      - 2️⃣ JMS洛杉矶(CN2 GT,s2)
+      - ⚡ JMS全球最快
+      - ⚡ JMS全球最快
 
   # ===== 规则分流组 =====
   - name: 🏠 内网地址
@@ -112,12 +112,12 @@ proxy-groups:
       - ⚡ JMS美国最快
       - ⚡ JMS全球最快
       - 🔄 JMS美国稳定IP
-      - JMS洛杉矶(高速优质,CN2 GIA,s3)
-      - JMS洛杉矶(日常稳定,CN2 GT,s1)
-      - JMS洛杉矶(日常稳定,CN2 GT,s2)
-      - JMS日本大阪(联通友好,Softbank,s4)
-      - JMS荷兰(高速优质,CN2 GIA,s5)
-      - JMS Freedom省流量(0.1倍率,s801)
+      - 1️⃣ JMS洛杉矶(CN2 GT,s1)
+      - 2️⃣ JMS洛杉矶(CN2 GT,s2)
+      - 3️⃣ JMS洛杉矶(CN2 GIA,s3)
+      - 4️⃣ JMS日本大阪(Softbank,s4)
+      - 5️⃣ JMS荷兰(CN2 GIA,s5)
+      - 6️⃣ JMS Freedom(0.1倍率,s801)
 
   - name: 🤖 AI平台
     type: select
@@ -125,12 +125,12 @@ proxy-groups:
       - 🔄 JMS美国稳定IP
       - ⚡ JMS美国最快
       - ⚡ JMS全球最快
-      - JMS洛杉矶(高速优质,CN2 GIA,s3)
-      - JMS洛杉矶(日常稳定,CN2 GT,s1)
-      - JMS洛杉矶(日常稳定,CN2 GT,s2)
-      - JMS日本大阪(联通友好,Softbank,s4)
-      - JMS荷兰(高速优质,CN2 GIA,s5)
-      - JMS Freedom省流量(0.1倍率,s801)
+      - 1️⃣ JMS洛杉矶(CN2 GT,s1)
+      - 2️⃣ JMS洛杉矶(CN2 GT,s2)
+      - 3️⃣ JMS洛杉矶(CN2 GIA,s3)
+      - 4️⃣ JMS日本大阪(Softbank,s4)
+      - 5️⃣ JMS荷兰(CN2 GIA,s5)
+      - 6️⃣ JMS Freedom(0.1倍率,s801)
       - 🎯 直连
 
   - name: ⛔ 广告拦截
@@ -141,12 +141,12 @@ proxy-groups:
       - ⚡ JMS美国最快
       - ⚡ JMS全球最快
       - 🔄 JMS美国稳定IP
-      - JMS洛杉矶(高速优质,CN2 GIA,s3)
-      - JMS洛杉矶(日常稳定,CN2 GT,s1)
-      - JMS洛杉矶(日常稳定,CN2 GT,s2)
-      - JMS日本大阪(联通友好,Softbank,s4)
-      - JMS荷兰(高速优质,CN2 GIA,s5)
-      - JMS Freedom省流量(0.1倍率,s801)
+      - 1️⃣ JMS洛杉矶(CN2 GT,s1)
+      - 2️⃣ JMS洛杉矶(CN2 GT,s2)
+      - 3️⃣ JMS洛杉矶(CN2 GIA,s3)
+      - 4️⃣ JMS日本大阪(Softbank,s4)
+      - 5️⃣ JMS荷兰(CN2 GIA,s5)
+      - 6️⃣ JMS Freedom(0.1倍率,s801)
 
   - name: 📥 BT Tracker
     type: select
@@ -155,12 +155,12 @@ proxy-groups:
       - ⚡ JMS美国最快
       - ⚡ JMS全球最快
       - 🔄 JMS美国稳定IP
-      - JMS洛杉矶(高速优质,CN2 GIA,s3)
-      - JMS洛杉矶(日常稳定,CN2 GT,s1)
-      - JMS洛杉矶(日常稳定,CN2 GT,s2)
-      - JMS日本大阪(联通友好,Softbank,s4)
-      - JMS荷兰(高速优质,CN2 GIA,s5)
-      - JMS Freedom省流量(0.1倍率,s801)
+      - 1️⃣ JMS洛杉矶(CN2 GT,s1)
+      - 2️⃣ JMS洛杉矶(CN2 GT,s2)
+      - 3️⃣ JMS洛杉矶(CN2 GIA,s3)
+      - 4️⃣ JMS日本大阪(Softbank,s4)
+      - 5️⃣ JMS荷兰(CN2 GIA,s5)
+      - 6️⃣ JMS Freedom(0.1倍率,s801)
 
   - name: 🌐 国外流量
     type: select
@@ -168,12 +168,12 @@ proxy-groups:
       - ⚡ JMS美国最快
       - ⚡ JMS全球最快
       - 🔄 JMS美国稳定IP
-      - JMS洛杉矶(高速优质,CN2 GIA,s3)
-      - JMS洛杉矶(日常稳定,CN2 GT,s1)
-      - JMS洛杉矶(日常稳定,CN2 GT,s2)
-      - JMS日本大阪(联通友好,Softbank,s4)
-      - JMS荷兰(高速优质,CN2 GIA,s5)
-      - JMS Freedom省流量(0.1倍率,s801)
+      - 1️⃣ JMS洛杉矶(CN2 GT,s1)
+      - 2️⃣ JMS洛杉矶(CN2 GT,s2)
+      - 3️⃣ JMS洛杉矶(CN2 GIA,s3)
+      - 4️⃣ JMS日本大阪(Softbank,s4)
+      - 5️⃣ JMS荷兰(CN2 GIA,s5)
+      - 6️⃣ JMS Freedom(0.1倍率,s801)
       - 🎯 直连
 
   - name: 🐟 漏网之鱼
@@ -182,12 +182,12 @@ proxy-groups:
       - ⚡ JMS美国最快
       - ⚡ JMS全球最快
       - 🔄 JMS美国稳定IP
-      - JMS洛杉矶(高速优质,CN2 GIA,s3)
-      - JMS洛杉矶(日常稳定,CN2 GT,s1)
-      - JMS洛杉矶(日常稳定,CN2 GT,s2)
-      - JMS日本大阪(联通友好,Softbank,s4)
-      - JMS荷兰(高速优质,CN2 GIA,s5)
-      - JMS Freedom省流量(0.1倍率,s801)
+      - 1️⃣ JMS洛杉矶(CN2 GT,s1)
+      - 2️⃣ JMS洛杉矶(CN2 GT,s2)
+      - 3️⃣ JMS洛杉矶(CN2 GIA,s3)
+      - 4️⃣ JMS日本大阪(Softbank,s4)
+      - 5️⃣ JMS荷兰(CN2 GIA,s5)
+      - 6️⃣ JMS Freedom(0.1倍率,s801)
       - 🎯 直连
 
   - name: 🎯 直连
