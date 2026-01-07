@@ -1,4 +1,4 @@
-# JustMySocks (JMS) 精简规则 - ShellCrash YAML 模板
+# JustMySocks (JMS) 完整规则 - Clash/Mihomo 配置
 # 
 # 节点说明（Los Angeles 套餐）：
 #   s1, s2 - CN2 GT（日常线路）
@@ -7,6 +7,43 @@
 #   s5     - 荷兰 CN2 GIA
 #   s801   - Freedom（省流量，0.1倍率）
 
+# ===== 基础配置 =====
+port: 7890
+socks-port: 7891
+mixed-port: 7892
+allow-lan: true
+mode: Rule
+log-level: info
+external-controller: 127.0.0.1:9090
+secret: ""
+
+# ===== DNS 配置 =====
+dns:
+  enable: true
+  listen: 0.0.0.0:53
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  fallback: []
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+
+# ===== 代理提供者（订阅源）=====
+proxy-providers:
+  jmssub:
+    type: http
+    url: "https://jmssub.net/members/getsub.php?service=1254849&id=6d82e252-2741-4e45-b092-84cc374908bd"
+    path: ./providers/jmssub.yaml
+    interval: 43200
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+
+# ===== 代理组 =====
 proxy-groups:
   # ===== JMS 原始节点组（按服务器分组）=====
   - name: 1️⃣ JMS洛杉矶(CN2 GT,s1)
@@ -64,7 +101,6 @@ proxy-groups:
       - jmssub
 
   # ===== 智能节点组 =====
-  # 美国最快：s1-s3 自动测速
   - name: ⚡ JMS美国最快
     type: url-test
     url: https://www.gstatic.com/generate_204
@@ -75,7 +111,6 @@ proxy-groups:
       - 2️⃣ JMS洛杉矶(CN2 GT,s2)
       - 3️⃣ JMS洛杉矶(CN2 GIA,s3)
 
-  # 全球最快：所有节点自动测速
   - name: ⚡ JMS全球最快
     type: url-test
     url: https://www.gstatic.com/generate_204
@@ -89,15 +124,29 @@ proxy-groups:
       - 5️⃣ JMS荷兰(CN2 GIA,s5)
       - 6️⃣ JMS Freedom(0.1倍率,s801)
 
-  # 稳定IP：s2优先→s1→s3（fallback故障转移）
   - name: 🔄 JMS美国稳定IP
     type: fallback
     url: https://www.gstatic.com/generate_204
     interval: 300
     proxies:
       - 2️⃣ JMS洛杉矶(CN2 GT,s2)
+      - 1️⃣ JMS洛杉矶(CN2 GT,s1)
+      - 3️⃣ JMS洛杉矶(CN2 GIA,s3)
+
+  # ===== 主选择器 =====
+  - name: 🚀 节点选择
+    type: select
+    proxies:
       - ⚡ JMS美国最快
       - ⚡ JMS全球最快
+      - 🔄 JMS美国稳定IP
+      - 1️⃣ JMS洛杉矶(CN2 GT,s1)
+      - 2️⃣ JMS洛杉矶(CN2 GT,s2)
+      - 3️⃣ JMS洛杉矶(CN2 GIA,s3)
+      - 4️⃣ JMS日本大阪(Softbank,s4)
+      - 5️⃣ JMS荷兰(CN2 GIA,s5)
+      - 6️⃣ JMS Freedom(0.1倍率,s801)
+      - 🎯 直连
 
   # ===== 规则分流组 =====
   - name: 🏠 内网地址
@@ -109,15 +158,10 @@ proxy-groups:
     type: select
     proxies:
       - 🎯 直连
+      - 🚀 节点选择
       - ⚡ JMS美国最快
       - ⚡ JMS全球最快
       - 🔄 JMS美国稳定IP
-      - 1️⃣ JMS洛杉矶(CN2 GT,s1)
-      - 2️⃣ JMS洛杉矶(CN2 GT,s2)
-      - 3️⃣ JMS洛杉矶(CN2 GIA,s3)
-      - 4️⃣ JMS日本大阪(Softbank,s4)
-      - 5️⃣ JMS荷兰(CN2 GIA,s5)
-      - 6️⃣ JMS Freedom(0.1倍率,s801)
 
   - name: 🤖 AI平台
     type: select
@@ -138,56 +182,28 @@ proxy-groups:
     proxies:
       - REJECT
       - 🎯 直连
-      - ⚡ JMS美国最快
-      - ⚡ JMS全球最快
-      - 🔄 JMS美国稳定IP
-      - 1️⃣ JMS洛杉矶(CN2 GT,s1)
-      - 2️⃣ JMS洛杉矶(CN2 GT,s2)
-      - 3️⃣ JMS洛杉矶(CN2 GIA,s3)
-      - 4️⃣ JMS日本大阪(Softbank,s4)
-      - 5️⃣ JMS荷兰(CN2 GIA,s5)
-      - 6️⃣ JMS Freedom(0.1倍率,s801)
+      - 🚀 节点选择
 
   - name: 📥 BT Tracker
     type: select
     proxies:
       - 🎯 直连
-      - ⚡ JMS美国最快
-      - ⚡ JMS全球最快
-      - 🔄 JMS美国稳定IP
-      - 1️⃣ JMS洛杉矶(CN2 GT,s1)
-      - 2️⃣ JMS洛杉矶(CN2 GT,s2)
-      - 3️⃣ JMS洛杉矶(CN2 GIA,s3)
-      - 4️⃣ JMS日本大阪(Softbank,s4)
-      - 5️⃣ JMS荷兰(CN2 GIA,s5)
-      - 6️⃣ JMS Freedom(0.1倍率,s801)
+      - 🚀 节点选择
 
   - name: 🌐 国外流量
     type: select
     proxies:
+      - 🚀 节点选择
       - ⚡ JMS美国最快
       - ⚡ JMS全球最快
       - 🔄 JMS美国稳定IP
-      - 1️⃣ JMS洛杉矶(CN2 GT,s1)
-      - 2️⃣ JMS洛杉矶(CN2 GT,s2)
-      - 3️⃣ JMS洛杉矶(CN2 GIA,s3)
-      - 4️⃣ JMS日本大阪(Softbank,s4)
-      - 5️⃣ JMS荷兰(CN2 GIA,s5)
-      - 6️⃣ JMS Freedom(0.1倍率,s801)
       - 🎯 直连
 
   - name: 🐟 漏网之鱼
     type: select
     proxies:
+      - 🚀 节点选择
       - ⚡ JMS美国最快
-      - ⚡ JMS全球最快
-      - 🔄 JMS美国稳定IP
-      - 1️⃣ JMS洛杉矶(CN2 GT,s1)
-      - 2️⃣ JMS洛杉矶(CN2 GT,s2)
-      - 3️⃣ JMS洛杉矶(CN2 GIA,s3)
-      - 4️⃣ JMS日本大阪(Softbank,s4)
-      - 5️⃣ JMS荷兰(CN2 GIA,s5)
-      - 6️⃣ JMS Freedom(0.1倍率,s801)
       - 🎯 直连
 
   - name: 🎯 直连
@@ -195,7 +211,7 @@ proxy-groups:
     proxies:
       - DIRECT
 
-# 规则提供者
+# ===== 规则提供者 =====
 rule-providers:
   private:
     type: http
@@ -274,30 +290,17 @@ rule-providers:
     path: ./ruleset/proxy.list
     interval: 86400
 
-# 规则（顺序重要，先匹配先生效）
+# ===== 规则（顺序重要）=====
 rules:
-  # 1. 内网 → 直连
   - RULE-SET,private,🏠 内网地址
   - RULE-SET,privateip,🏠 内网地址
-
-  # 2. 广告 → 拦截
   - RULE-SET,ads,⛔ 广告拦截
-
-  # 3. BT Tracker → 直连
   - RULE-SET,trackerslist,📥 BT Tracker
-
-  # 4. AI → 代理
   - RULE-SET,ai,🤖 AI平台
-
-  # 5. 国内 → 直连
   - RULE-SET,cn,🇨🇳 国内流量
   - RULE-SET,microsoft-cn,🇨🇳 国内流量
   - RULE-SET,apple-cn,🇨🇳 国内流量
   - RULE-SET,google-cn,🇨🇳 国内流量
   - RULE-SET,cnip,🇨🇳 国内流量
-
-  # 6. 国外 → 代理
   - RULE-SET,proxy,🌐 国外流量
-
-  # 7. 兜底
   - MATCH,🐟 漏网之鱼
