@@ -30,7 +30,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    filter: "(?i)(GIA|高速|优质|s3)"
+    filter: "s3\\."
     use:
       - jmssub
 
@@ -39,7 +39,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    filter: "(?i)(GT|日常|稳定|s[12])"
+    filter: "s[12]\\."
     use:
       - jmssub
 
@@ -48,7 +48,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    filter: "(?i)(日本|大阪|东京|japan|osaka|tokyo|softbank|s4)"
+    filter: "s4\\."
     use:
       - jmssub
 
@@ -57,13 +57,13 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    filter: "(?i)(荷兰|netherlands|s5)"
+    filter: "s5\\."
     use:
       - jmssub
 
   - name: 💰 Freedom省流量(s801)
     type: select
-    filter: "(?i)(freedom|省流|s801)"
+    filter: "s801\\."
     use:
       - jmssub
 
